@@ -3,7 +3,7 @@ org.idempiere.mfg
 
 Description
 -----------
-liberoMFG plugin for  iDempiere Business Suite ERP/CRM/SCM
+Libero Manufacturing Management plugin for  iDempiere Business Suite ERP/CRM/SCM
 
 
 Features
@@ -15,13 +15,13 @@ Features
 
 Contributors
 ------------
-- 2019 PShepetko <pshepetko@google.com>.
+- 2019 PShepetko <pshepetko@gmail.com>.
 
 
 Instructions
 ------------
-- 1)download the TMS plugin from https://github.com/pshepetko/org.idempiere.mfg/downloads/
+- 1)download the TMS plugin from https://github.com/pshepetko/org.idempiere.mfg/blob/master/downloads/
 - 2) In Apache Felix Web Console: 
-- 2.1) Install plugin org.idempiere.mfg
+- 2.1) Install plugin 
 - 2.2) Select file 
 - 2.3) Install and Update
