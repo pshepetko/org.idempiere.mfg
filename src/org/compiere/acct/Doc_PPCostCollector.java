@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import org.compiere.model.MAccount;
 import org.compiere.model.MAcctSchema;
@@ -309,6 +310,7 @@ public class Doc_PPCostCollector extends Doc
 		for (MCostDetail cd : getCostDetails())
 		{
 			BigDecimal costs = cd.getAmt();
+			
 			if (costs.signum() == 0)
 				continue;
 			MCostElement element = MCostElement.get(getCtx(), cd.getM_CostElement_ID());
@@ -316,6 +318,7 @@ public class Doc_PPCostCollector extends Doc
 			createLines(element, as, fact, product, debit, credit, costs, m_cc.getMovementQty());
 		}
 		//
+		
 		return facts;
 	}
 	

@@ -331,4 +331,12 @@
             class="org.libero.process.eam.CreateMOFromForecastLine4eAM">
       </process>
    </extension>
+   <extension
+         id="org.libero.form.testForm"
+         name="testForm"
+         point="org.adempiere.webui.Form">
+      <form
+            class="org.libero.form.testForm">
+      </form>
+   </extension>
 </plugin>

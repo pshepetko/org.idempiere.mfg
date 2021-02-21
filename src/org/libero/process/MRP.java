@@ -24,15 +24,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.adempiere.exceptions.AdempiereException;
 import org.adempiere.exceptions.DBException;
 import org.compiere.model.MBPartner;
+import org.compiere.model.MColumn;
 import org.compiere.model.MDocType;
+import org.compiere.model.MForecastLine;
 import org.compiere.model.MLocator;
 import org.compiere.model.MMessage;
 import org.compiere.model.MNote;
@@ -64,9 +69,10 @@ import org.eevolution.model.MPPProductBOM;
 import org.eevolution.model.MPPProductPlanning;
 import org.eevolution.model.X_PP_Product_Planning;
 import org.libero.model.MDDNetworkDistribution;
-import org.libero.model.MDDNetworkDistributionLine; 
+import org.libero.model.MDDNetworkDistributionLine;
 import org.libero.model.MPPMRP;
-import org.libero.model.MPPOrder; 
+import org.libero.model.MPPOrder;
+
 /**
  *	Calculate Material Plan MRP
  *	
@@ -107,7 +113,9 @@ public class MRP extends SvrProcess
 	private int count_Msg = 0;
 	private boolean p_DeleteMRP;
 	
-	private String  msg_debug;
+	private String  msg_debug="->";
+	private int global_mrp_id = 0;
+
 	// Cache
 	private static CCache<String ,Integer>   dd_order_id_cache 	= new CCache<String,Integer>(MDDOrder.COLUMNNAME_DD_Order_ID, 50);
 	private static CCache<Integer,MBPartner>   partner_cache 	= new CCache<Integer,MBPartner>(MBPartner.Table_Name, 50);
@@ -197,6 +205,10 @@ public class MRP extends SvrProcess
 		dd_order_id_cache.clear();
 		partner_cache.clear(); 
 		
+		//add time process by PShepetko		
+		DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		resultMsg.append("MRP process started at " +df.format(new Date()));
+		
 		ArrayList <Object> parameters = new ArrayList<Object>();
 		StringBuffer whereClause = new StringBuffer(MResource.COLUMNNAME_ManufacturingResourceType+"=? AND AD_Client_ID=?");
 		parameters.add(MResource.MANUFACTURINGRESOURCETYPE_Plant);
@@ -208,6 +220,7 @@ public class MRP extends SvrProcess
 		}	
 		List <MResource> plants = new Query(getCtx(), MResource.Table_Name, whereClause.toString(), get_TrxName())
 										.setParameters(parameters)
+										.setOrderBy(" ORDER BY value ")//22062018Pshepetko+
 										.list(); 
 		for(MResource plant : plants)
 		{	
@@ -254,20 +267,33 @@ public class MRP extends SvrProcess
 
 					log.info("Run MRP to Wharehouse: " + w.getName());
 					runMRP(getAD_Client_ID(), org.getAD_Org_ID(), plant.getS_Resource_ID(), w.getM_Warehouse_ID());
-					resultMsg.append("<br>finish MRP to Warehouse " +w.getName());
+//					resultMsg.append("<br>finish MRP to Warehouse " +w.getName());
 				}
-				resultMsg.append("<br>finish MRP to Organization " +org.getName());
+//				resultMsg.append("<br>finish MRP to Organization " +org.getName());
 			}
-			resultMsg.append("<br> " +Msg.translate(getCtx(), "Created"));
+/*			resultMsg.append("<br> " +Msg.translate(getCtx(), "Created"));
 			resultMsg.append("<br> ");
 			resultMsg.append("<br> " +Msg.translate(getCtx(), "PP_Order_ID")+":"+count_MO);
 			resultMsg.append("<br> " +Msg.translate(getCtx(), "DD_Order_ID")+":"+count_DO);
 			resultMsg.append("<br> " +Msg.translate(getCtx(), "M_Requisition_ID")+":"+count_MR);
 			resultMsg.append("<br> " +Msg.translate(getCtx(), "AD_Note_ID")+":"+count_Msg);
 			resultMsg.append("<br>finish MRP to Plant " +plant.getName());
+*/			
+		//add resultMsg format by PShepetko	
+				resultMsg.append( 
+					"<br>Created MO="+count_MO + 
+					", DO="+count_DO +
+					", MR="+count_MR +
+					", Notice="+count_Msg+
+					" for Plant " +plant.getName());
+			
+			count_MO=0;count_DO=0;count_MR=0;count_Msg=0;
 		}		
-		//
-		return msg_debug+"|"+resultMsg.toString();
+		
+		//add time process by PShepetko	
+		resultMsg.append("<br>MRP process finished  at " +df.format(new Date()));
+		
+		return resultMsg.toString();
 	} 
 
 
@@ -373,6 +399,8 @@ public class MRP extends SvrProcess
 					final Timestamp DateStartSchedule = rs.getTimestamp(MPPMRP.COLUMNNAME_DateStartSchedule);
 					final BigDecimal Qty = rs.getBigDecimal(MPPMRP.COLUMNNAME_Qty);
 					final int M_Product_ID = rs.getInt(MPPMRP.COLUMNNAME_M_Product_ID); 
+					
+					global_mrp_id=PP_MRP_ID;
 
 					// if demand is forecast and promised date less than or equal to today, ignore this QtyGrossReq
 					if (MPPMRP.TYPEMRP_Demand.equals(TypeMRP)
@@ -415,7 +443,8 @@ public class MRP extends SvrProcess
 						// Load Product & define Product Data Planning
 						product = MProduct.get(getCtx(), M_Product_ID);
 						log.info("Calculte Plan to this Product:" + product);
-						setProduct(AD_Client_ID,AD_Org_ID ,S_Resource_ID , M_Warehouse_ID,  product);
+											
+						setProduct(AD_Client_ID,AD_Org_ID ,S_Resource_ID , M_Warehouse_ID,  product, PP_MRP_ID);
 						
 						// If No Product Planning found, go to next MRP record 
 						if (m_product_planning == null)
@@ -534,13 +563,13 @@ public class MRP extends SvrProcess
 	 *	@param MProduct
 	 * @throws SQLException 
 	 */
-	private void setProduct(int AD_Client_ID , int AD_Org_ID, int S_Resource_ID , int M_Warehouse_ID, MProduct product) throws SQLException
+	private void setProduct(int AD_Client_ID , int AD_Org_ID, int S_Resource_ID , int M_Warehouse_ID, MProduct product, int PP_MRP_ID) throws SQLException
 	{
 		DatePromisedTo = null;
 		DatePromisedFrom = null;
 		//
 		// Find data product planning demand 
-		m_product_planning = getProductPlanning(AD_Client_ID, AD_Org_ID, S_Resource_ID, M_Warehouse_ID, product);
+		m_product_planning = getProductPlanning(AD_Client_ID, AD_Org_ID, S_Resource_ID, M_Warehouse_ID, product , PP_MRP_ID);
 		
 		log.info("PP:"+AD_Client_ID+"|"+ AD_Org_ID+"|"+ S_Resource_ID+"|"+ M_Warehouse_ID+"|"+ product);
 		
@@ -581,14 +610,28 @@ public class MRP extends SvrProcess
 		log.info("QtyOnHand :" + QtyProjectOnHand);
 	}
 	
-	protected MPPProductPlanning getProductPlanning(int AD_Client_ID , int AD_Org_ID, int S_Resource_ID , int M_Warehouse_ID, MProduct product) throws SQLException
+	protected MPPProductPlanning getProductPlanning(int AD_Client_ID , int AD_Org_ID, int S_Resource_ID , int M_Warehouse_ID, MProduct product, int PP_MRP_ID) throws SQLException
 	{
-		// Find data product planning demand 
-		MPPProductPlanning pp = MPPProductPlanning.find(getCtx() ,AD_Org_ID , M_Warehouse_ID, S_Resource_ID , product.getM_Product_ID(), get_TrxName());
+		int ppdata_id=0;
+		MPPProductPlanning pp =null;
+/*		MPPMRP mrp = new MPPMRP(getCtx(), global_mrp_id, get_TrxName());
+		if (mrp.getOrderType().equals("FCT")) {
+			ppdata_id=getPPDataForMaintenance(mrp.getM_ForecastLine_ID());
+			msg_debug+=mrp.getM_ForecastLine_ID()+"|"+ppdata_id+"["+global_mrp_id+"]";
+			if (ppdata_id>0)
+				pp = new MPPProductPlanning(getCtx(), ppdata_id, get_TrxName()); 
+			
+		}
+		
+		if (ppdata_id==0)
+*/			// Find data product planning demand 
+			pp = MPPProductPlanning.find(getCtx() ,AD_Org_ID , M_Warehouse_ID, S_Resource_ID , product.getM_Product_ID(), get_TrxName());
+	
 		if (pp == null)
 		{
 			return null;
 		}
+		
 		MPPProductPlanning pp2 = new MPPProductPlanning(getCtx(), 0 , null);                                                       
 		MPPProductPlanning.copyValues(pp, pp2);
 		pp2.setIsRequiredDRP(isRequiredDRP());
@@ -1061,6 +1104,7 @@ public class MRP extends SvrProcess
 	protected void createPPOrder(int AD_Org_ID, int PP_MRP_ID, MProduct product,BigDecimal QtyPlanned,Timestamp DemandDateStartSchedule)
 	throws AdempiereException, SQLException
 	{
+	
 		log.info("PP_Product_BOM_ID:" + m_product_planning.getPP_Product_BOM_ID() + ", AD_Workflow_ID:" + m_product_planning.getAD_Workflow_ID()
 		+ ", product_planning:" + m_product_planning);
 		if (m_product_planning.getPP_Product_BOM_ID() == 0 || m_product_planning.getAD_Workflow_ID() == 0)
@@ -1069,7 +1113,6 @@ public class MRP extends SvrProcess
 		}
 		
 		MPPOrder order = new MPPOrder(getCtx(), 0, get_TrxName());
-		order.addDescription("MO generated from MRP");
 		order.setAD_Org_ID(AD_Org_ID);
 		order.setLine(10);
 		if(MPPProductBOM.BOMTYPE_Maintenance.equals(getBOMType()))
@@ -1084,14 +1127,14 @@ public class MRP extends SvrProcess
 			order.setC_DocTypeTarget_ID(docTypeMO_ID);
 			order.setC_DocType_ID(docTypeMO_ID);  
 		}
-		
-		order.setS_Resource_ID(m_product_planning.getS_Resource_ID());
+		order.addDescription("MO generated from MRP");		
+ 		order.setS_Resource_ID(m_product_planning.getS_Resource_ID());
 		order.setM_Warehouse_ID(m_product_planning.getM_Warehouse_ID());
 		order.setM_Product_ID(m_product_planning.getM_Product_ID());
-		order.setM_AttributeSetInstance_ID(0);
 		order.setPP_Product_BOM_ID(m_product_planning.getPP_Product_BOM_ID());
 		order.setAD_Workflow_ID(m_product_planning.getAD_Workflow_ID());
 		order.setPlanner_ID(m_product_planning.getPlanner_ID());
+ 		order.setM_AttributeSetInstance_ID(0);
 		order.setDateOrdered(getToday());                       
 		order.setDatePromised(DemandDateStartSchedule);
 		
@@ -1442,6 +1485,33 @@ public class MRP extends SvrProcess
 		
 		String BOMType = DB.getSQLValueString(get_TrxName(), "SELECT BOMType FROM PP_Product_BOM WHERE PP_Product_BOM_ID = ?" , m_product_planning.getPP_Product_BOM_ID());
 		return BOMType;
+	}
+	
+	/**
+	 * get Product Planning data for Maintenance ID 
+	 * @return
+	 */
+	private int getPPDataForMaintenance(int M_ForecastLine_ID)
+	{
+		int ppd_id =0;
+		
+		if (checkColumnExists("M_ForecastLine", "PP_Product_Planning_ID")==1) {
+			ppd_id = DB.getSQLValue(get_TrxName(), "SELECT COALESCE(PP_Product_Planning_ID) FROM M_ForecastLine WHERE M_ForecastLine_ID =?;",M_ForecastLine_ID);
+		}
+		return   ppd_id;
+	}
+	
+	/**
+	 * check Column Exists in the table because this custom field for Maintenance
+	 * @return
+	 */
+	private int checkColumnExists(String tablename, String columnname)
+	{
+ 
+		return  DB.getSQLValue(get_TrxName(), "SELECT COUNT(column_name) FROM  information_schema.columns " + 
+			 		"WHERE table_schema = LOWER('adempiere') " + 
+			 		"AND  table_name = LOWER('"+tablename+"') " + 
+			 		"AND column_name = LOWER('"+columnname+"');");
 	}
 }
 

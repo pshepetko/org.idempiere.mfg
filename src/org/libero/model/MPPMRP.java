@@ -887,7 +887,10 @@ public class MPPMRP extends X_PP_MRP implements DocAction
 		MOrder o = ol.getParent();
 		MDocType dt = MDocType.get(o.getCtx(), o.getC_DocTypeTarget_ID());
 		String DocSubTypeSO = dt.getDocSubTypeSO();
-		if(MDocType.DOCSUBTYPESO_StandardOrder.equals(DocSubTypeSO))
+		
+ 	if ((MDocType.DOCSUBTYPESO_StandardOrder.equals(DocSubTypeSO)) &&
+		  (DB.getSQLValue(ol.get_TrxName(), 
+				"SELECT COUNT (PP_Product_BOM_ID) FROM PP_Product_BOM WHERE BOMType IN ('O','K')  AND BOMUse='M' AND M_Product_ID=?",ol.getM_Product_ID())>0))//PShepetko
 		{
 			int res = MPPMRP.createMOMakeTo(mrp,ol, ol.getQtyOrdered());
 			mrp.setS_Resource_ID(res);

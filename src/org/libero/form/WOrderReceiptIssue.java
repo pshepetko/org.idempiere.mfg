@@ -470,7 +470,7 @@ ValueChangeListener,Serializable,WTableModelListener
 			
 			generateSummaryTable();
 
-			int result = -1;			
+/*			int result = -1;			
 			
 			result = Messagebox.show(Msg.getMsg(Env.getCtx(), "Update"),"",Messagebox.OK|Messagebox.CANCEL,Messagebox.QUESTION);
 			 			
@@ -485,6 +485,27 @@ ValueChangeListener,Serializable,WTableModelListener
 				}
 				//Clients.showBusy(TabsReceiptsIssue, null);
 			}
+*/
+			
+			//pshepetko msg<
+			Messagebox.show(Msg.getMsg(Env.getCtx(), "Update"), 
+		    	    "Question", Messagebox.OK | Messagebox.CANCEL ,
+		    	    Messagebox.QUESTION,
+		    	        new org.zkoss.zk.ui.event.EventListener(){
+		    	            public void onEvent(Event e){
+		    	            	 if("onOK".equals(e.getName())){
+		    	     				if (cmd_process(false, issue))
+			    	    				{
+				    						dispose();
+				    						return;
+			    	    				}
+		    	     				}
+		    				//	Clients.showBusy(TabsReceiptsIssue, null);
+		    	            }
+		    	        }
+		    	    );
+	 		// pshepetko msg>
+			
 			TabsReceiptsIssue.setSelectedIndex(0);
 		}	
 
