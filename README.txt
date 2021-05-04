@@ -10,7 +10,7 @@ Features
 --------
 - Repository: https://github.com/pshepetko/org.idempiere.mfg
 - License: GPL 2
-- Version: 7.1.0
+- Version: 8.2.0
 
 
 Contributors
