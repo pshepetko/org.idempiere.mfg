@@ -2,17 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: LiberoManufacturing
 Bundle-SymbolicName: org.idempiere.mfg ;singleton:=true
-Bundle-Version: 12.0.0.qualifier
+Bundle-Version: 13.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Require-Bundle: org.adempiere.base;bundle-version="9.0.0",
- org.adempiere.ui;bundle-version="9.0.0",
- org.adempiere.plugin.utils;bundle-version="9.0.0",
- org.adempiere.ui.zk;bundle-version="9.0.0",
- org.adempiere.ui.zk;bundle-version="9.0.0",
+Require-Bundle: org.adempiere.base;bundle-version="13.0.0",
+ org.adempiere.ui;bundle-version="13.0.0",
+ org.adempiere.plugin.utils;bundle-version="13.0.0",
+ org.adempiere.ui.zk;bundle-version="13.0.0",
+ org.adempiere.ui.zk;bundle-version="13.0.0",
  org.krysalis.barcode4j;bundle-version="2.1.0",
- org.idempiere.zk.extra;bundle-version="9.0.0",
- zk;bundle-version="8.6.0",
- zul;bundle-version="8.6.0",
+ org.idempiere.zk.extra;bundle-version="13.0.0",
+ zk;bundle-version="10.0.1",
+ zul;bundle-version="10.0.1",
  wrapped.org.jfree.jcommon;bundle-version="1.0.24",
  wrapped.org.jfree.jfreechart;bundle-version="1.0.19",
  org.osgi.service.event;bundle-version="1.4.1"
