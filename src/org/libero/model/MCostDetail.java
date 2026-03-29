@@ -24,22 +24,25 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import org.compiere.acct.Doc;
 import org.compiere.model.I_M_CostDetail;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MClientInfo;
 import org.compiere.model.MCost;
 import org.compiere.model.MCostElement;
 import org.compiere.model.MCostQueue;
+import org.compiere.model.MInventory;
+import org.compiere.model.MInventoryLine;
 import org.compiere.model.MProduct;
 import org.compiere.model.MProductionLine;
 import org.compiere.model.Query;
 import org.compiere.model.X_M_Cost;
 import org.compiere.model.X_M_CostDetail;
 import org.compiere.model.X_M_CostHistory;
+import org.compiere.util.CCache;
 import org.compiere.util.CLogger;
 import org.compiere.util.DB;
 import org.compiere.util.Env;
+import org.idempiere.acct.IDoc;
 
 /**
  * 	Cost Detail Model
@@ -836,7 +839,7 @@ public class MCostDetail extends X_M_CostDetail
 		{
 			String docBaseType = DB.getSQLValueString((String)null, 
 					INOUTLINE_DOCBASETYPE_SQL, getM_InOutLine_ID());
-			return Doc.DOCTYPE_MatShipment.equals(docBaseType);
+			return IDoc.DOCTYPE_MatShipment.equals(docBaseType);
 		}
 		return false;
 	}
@@ -1227,7 +1230,7 @@ public class MCostDetail extends X_M_CostDetail
 				{
 					if (adjustment)
 					{
-						costingMethod = getM_InventoryLine().getM_Inventory().getCostingMethod();
+						costingMethod = getCostingMethod();
 						if (MCostElement.COSTINGMETHOD_AverageInvoice.equals(costingMethod))
 						{
 							if (cost.getCurrentQty().signum() == 0 && qty.signum() == 0) {
@@ -1257,7 +1260,7 @@ public class MCostDetail extends X_M_CostDetail
 			{
 				if (adjustment)
 				{
-					costingMethod = getM_InventoryLine().getM_Inventory().getCostingMethod();
+					costingMethod = getCostingMethod();
 					if (MCostElement.COSTINGMETHOD_AveragePO.equals(costingMethod))
 					{
 						if (cost.getCurrentQty().signum() == 0 && qty.signum() == 0) {
@@ -1332,7 +1335,7 @@ public class MCostDetail extends X_M_CostDetail
 			{
 				if (adjustment)
 				{
-					costingMethod = getM_InventoryLine().getM_Inventory().getCostingMethod();
+					costingMethod = getCostingMethod();
 					if (MCostElement.COSTINGMETHOD_StandardCosting.equals(costingMethod))
 					{
 						cost.add(amt.multiply(cost.getCurrentQty()), qty);					
@@ -1421,5 +1424,24 @@ public class MCostDetail extends X_M_CostDetail
 		
 		return cost.save();
 	}	//	process
+
+
+	private String getCostingMethod() {
+		CCache<String, String> cache = new CCache<String, String>("MCostDetail.getCostingMethod", 100, 120);
+		if (cache.containsKey(String.valueOf(getM_InventoryLine_ID())))
+			return cache.get(String.valueOf(getM_InventoryLine_ID()));
+		
+		MInventoryLine inventoryLine = getM_InventoryLine_ID() > 0 ? new MInventoryLine(getCtx(), getM_InventoryLine_ID(), get_TrxName()) : null;
+		if (inventoryLine != null) {
+			MInventory inventory = new MInventory(getCtx(), inventoryLine.getM_Inventory_ID(), get_TrxName());
+			if (inventory != null)
+			{
+				String costingMethod = inventory.getCostingMethod();
+				cache.put(String.valueOf(getM_InventoryLine_ID()), costingMethod);
+				return costingMethod;
+			}
+		}
+		return null;
+	}
 	
 }	//	MCostDetail

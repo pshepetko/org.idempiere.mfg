@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.util.logging.Level;
 
 import org.adempiere.base.IDocFactory;
-import org.compiere.acct.Doc;
+import org.idempiere.acct.doc.Doc;
 import org.compiere.acct.Doc_DDOrder;
 import org.compiere.acct.Doc_PPCostCollector;
 import org.compiere.acct.Doc_PPOrder; 

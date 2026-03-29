@@ -2,15 +2,16 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: LiberoManufacturing
 Bundle-SymbolicName: org.idempiere.mfg ;singleton:=true
-Bundle-Version: 13.0.0.qualifier
+Bundle-Version: 14.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Require-Bundle: org.adempiere.base;bundle-version="13.0.0",
- org.adempiere.ui;bundle-version="13.0.0",
- org.adempiere.plugin.utils;bundle-version="13.0.0",
- org.adempiere.ui.zk;bundle-version="13.0.0",
- org.adempiere.ui.zk;bundle-version="13.0.0",
+Require-Bundle: org.adempiere.base;bundle-version="14.0.0",
+ org.idempiere.acct;bundle-version="14.0.0",
+ org.adempiere.ui;bundle-version="14.0.0",
+ org.adempiere.plugin.utils;bundle-version="14.0.0",
+ org.adempiere.ui.zk;bundle-version="14.0.0",
+ org.adempiere.ui.zk;bundle-version="14.0.0",
  org.krysalis.barcode4j;bundle-version="2.1.0",
- org.idempiere.zk.extra;bundle-version="13.0.0",
+ org.idempiere.zk.extra;bundle-version="14.0.0",
  zk;bundle-version="10.0.1",
  zul;bundle-version="10.0.1",
  wrapped.org.jfree.jcommon;bundle-version="1.0.24",
@@ -21,6 +22,7 @@ Import-Package: junit.extensions,
  junit.framework,
  junit.runner;version="4.12.0",
  junit.textui;version="4.12.0",
+ org.compiere.model,
  org.krysalis.barcode4j;version="2.1.0",
  org.krysalis.barcode4j.impl;version="2.1.0",
  org.krysalis.barcode4j.impl.upcean;version="2.1.0",
