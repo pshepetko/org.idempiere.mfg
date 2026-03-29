@@ -38,7 +38,7 @@ import org.adempiere.webui.component.Rows;
 import org.adempiere.webui.editor.WNumberEditor;
 import org.adempiere.webui.panel.ADForm;
 import org.adempiere.webui.session.SessionManager;
-import org.adempiere.webui.window.FDialog;
+import org.adempiere.webui.window.Dialog;
 import org.compiere.model.MInvoice;
 import org.compiere.model.MInvoiceLine;
 import org.compiere.model.MOrder;
@@ -781,7 +781,7 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 			throw new AdempiereException(e.getMessage());
 		}				
 		
-		FDialog.info(-1, this, Msg.translate(Env.getCtx(), "C_Order_ID")+ " : " + order.getDocumentInfo() + " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
+		Dialog.info(getWindowNo(), Msg.translate(Env.getCtx(), "C_Order_ID")+ " : " + order.getDocumentInfo() + " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
 		if (log.isLoggable(Level.CONFIG)) log.config("#" + lineCount);
 		return true;
 	}	//	cmd_saveOrder
@@ -836,7 +836,7 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 			throw new AdempiereException(e.getMessage());
 		}		
 		
-		FDialog.info(-1, this, Msg.translate(Env.getCtx(), "C_Invoice_ID")+ " : " + invoice.getDocumentInfo() +  " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
+		Dialog.info(getWindowNo(), Msg.translate(Env.getCtx(), "C_Invoice_ID")+ " : " + invoice.getDocumentInfo() +  " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
 		if (log.isLoggable(Level.CONFIG)) log.config("#" + lineCount);
 		return true;
 	}	//	cmd_saveInvoice
@@ -873,7 +873,7 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 					MProjectLine pl = new MProjectLine (project);
 					pl.setM_Product_ID(M_Product_ID);
 					pl.setPlannedQty(qty);
-					pl.setPlannedPrice(getStandardPrice(M_Product_ID,qty.doubleValue(), project));
+					pl.setPlannedPrice(getStandardPrice(M_Product_ID,qty.doubleValue(), project, pl.get_TrxName()));
 					pl.saveEx(trx.getTrxName());
 					lineCount++;
 				}
@@ -890,7 +890,7 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 			throw new AdempiereException(e.getMessage());
 		}		
 		
-		FDialog.info(-1, this, Msg.translate(Env.getCtx(), "C_Project_ID")+ " : " + project.getName() + " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
+		Dialog.info(getWindowNo(), Msg.translate(Env.getCtx(), "C_Project_ID")+ " : " + project.getName() + " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
 		if (log.isLoggable(Level.CONFIG)) log.config("#" + lineCount);
 		return true;
 	}	//	cmd_saveProject
@@ -931,7 +931,7 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 					MProjectLine pl = new MProjectLine (project);
 					pl.setM_Product_ID(M_Product_ID);
 					pl.setPlannedQty(qty);
-					pl.setPlannedPrice(getStandardPrice(M_Product_ID,qty.doubleValue(), project));
+					pl.setPlannedPrice(getStandardPrice(M_Product_ID,qty.doubleValue(), project, pl.get_TrxName()));
 					pl.saveEx(trx.getTrxName());
 					lineCount++;
 				}
@@ -948,7 +948,7 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 			throw new AdempiereException(e.getMessage());
 		}		
 		
-		FDialog.info(-1, this, Msg.translate(Env.getCtx(), "C_Project_ID")+ " : " + project.getName() + " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
+		Dialog.info(getWindowNo(), Msg.translate(Env.getCtx(), "C_Project_ID")+ " : " + project.getName() + " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
 		if (log.isLoggable(Level.CONFIG)) log.config("#" + lineCount);
 		return true;
 	}	//	cmd_saveProject
@@ -991,7 +991,7 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 					MProjectLine pl = new MProjectLine (project);
 					pl.setM_Product_ID(M_Product_ID);
 					pl.setPlannedQty(qty);
-					pl.setPlannedPrice(getStandardPrice(M_Product_ID,qty.doubleValue(), project));
+					pl.setPlannedPrice(getStandardPrice(M_Product_ID,qty.doubleValue(), project, pl.get_TrxName()));
 					pl.saveEx(trx.getTrxName());
 					lineCount++;
 				}
@@ -1008,7 +1008,7 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 			throw new AdempiereException(e.getMessage());
 		}		
 		
-		FDialog.info(-1, this, Msg.translate(Env.getCtx(), "C_Project_ID")+ " : " + project.getName() + " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
+		Dialog.info(getWindowNo(), Msg.translate(Env.getCtx(), "C_Project_ID")+ " : " + project.getName() + " , " + Msg.translate(Env.getCtx(), "NoOfLines") + " " + Msg.translate(Env.getCtx(), "Inserted") + " = " + lineCount);
 		if (log.isLoggable(Level.CONFIG)) log.config("#" + lineCount);
 		return true;
 	}	//	cmd_saveProject
@@ -1016,11 +1016,11 @@ public class WBOMDropConfigurator extends ADForm implements EventListener<Event>
 	 * 	Get Limit Price if exists
 	 *	@return limit
 	 */
-	private BigDecimal getStandardPrice(int M_Product_ID, Double plannedQty, MProject project)
+	private BigDecimal getStandardPrice(int M_Product_ID, Double plannedQty, MProject project, String trxName)
 	{
 		
 		MProductPricing pp = new MProductPricing (M_Product_ID,
-			project.getC_BPartner_ID(), new BigDecimal(plannedQty), true);
+			project.getC_BPartner_ID(), new BigDecimal(plannedQty), true, trxName);
 		pp.setM_PriceList_ID(project.getM_PriceList_ID());
 		if (pp.calculatePrice())
 			return pp.getPriceStd();

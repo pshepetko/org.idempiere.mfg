@@ -23,7 +23,6 @@ import java.sql.Timestamp;
 import java.util.Properties;
 
 import org.adempiere.exceptions.AdempiereException;
-import org.adempiere.util.Callback;
 import org.adempiere.webui.component.Button;
 import org.adempiere.webui.component.Combobox;
 import org.adempiere.webui.component.Grid;
@@ -50,7 +49,6 @@ import org.adempiere.webui.panel.ADForm;
 import org.adempiere.webui.panel.CustomForm;
 import org.adempiere.webui.panel.IFormController;
 import org.adempiere.webui.session.SessionManager;
-import org.adempiere.webui.window.FDialog;
 import org.compiere.minigrid.IMiniTable;
 import org.compiere.model.GridField;
 import org.compiere.model.GridFieldVO;
@@ -430,7 +428,6 @@ ValueChangeListener,Serializable,WTableModelListener
 	{
 		disableToDeliver();
 		prepareTable(issue);
-		issue.autoSize();
 		issue.getModel().addTableModelListener(this);
 		issue.setRowCount(0);	
 	} //  dynInit
