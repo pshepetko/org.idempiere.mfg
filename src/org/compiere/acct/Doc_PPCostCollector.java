@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-
 import org.compiere.model.MAccount;
 import org.compiere.model.MAcctSchema;
 import org.compiere.model.MCostDetail;
@@ -33,6 +31,9 @@ import org.compiere.model.MProduct;
 import org.compiere.model.ProductCost;
 import org.compiere.model.Query;
 import org.compiere.util.Env;
+import org.idempiere.acct.doc.Doc;
+import org.idempiere.acct.doc.Fact;
+import org.idempiere.acct.doc.FactLine;
 import org.libero.model.MPPCostCollector;
 import org.libero.model.RoutingService;
 import org.libero.model.RoutingServiceFactory;

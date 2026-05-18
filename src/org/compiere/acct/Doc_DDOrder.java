@@ -23,6 +23,8 @@ import org.compiere.model.MAcctSchema;
 import org.compiere.model.MDocType;
 import org.compiere.util.Env; 
 import org.eevolution.model.MDDOrder;
+import org.idempiere.acct.doc.Doc;
+import org.idempiere.acct.doc.Fact;
 
 /**
  *  Post Cost Collector

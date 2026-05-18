@@ -21,7 +21,9 @@ import java.util.ArrayList;
 
 import org.compiere.model.MAcctSchema; 
 import org.compiere.model.MDocType;
-import org.compiere.util.Env; 
+import org.compiere.util.Env;
+import org.idempiere.acct.doc.Doc;
+import org.idempiere.acct.doc.Fact;
 import org.libero.model.MPPOrder;
 
 /**

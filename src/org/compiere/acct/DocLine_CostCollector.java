@@ -12,6 +12,8 @@ import org.compiere.model.MCostElement;
 import org.compiere.model.PO;
 import org.compiere.model.ProductCost; 
 import org.compiere.util.DB;
+import org.idempiere.acct.doc.Doc;
+import org.idempiere.acct.doc.DocLine;
 import org.libero.tables.I_M_Product_Acct;
 
 /**
